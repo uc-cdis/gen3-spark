@@ -36,7 +36,7 @@ def configure_hdfs_site():
     tree = et.parse(core_site_path)
     root = tree.getroot()
     root.append(create_property('dfs.blocksize', '268435456'))
-    root.append(create_property('dfs.hosts', '0.0.0.0'))
+    root.append(create_property('dfs.hosts', ''))
     root.append(create_property('dfs.namenode.handler.count', '100'))
     root.append(create_property('dfs.namenode.name.dir', '/hadoop/hdfs/data/dfs/namenode'))
     root.append(create_property('dfs.namenode.data.dir', '/hadoop/hdfs/data/dfs/datanode'))
