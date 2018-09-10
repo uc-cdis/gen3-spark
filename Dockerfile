@@ -19,6 +19,7 @@ RUN mkdir -p /usr/share/man/man1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     openjdk-8-jdk-headless \
+    openssh-server \
     # dependency for pyscopg2 - which is dependency for sqlalchemy postgres engine
     libpq-dev \
     wget \
