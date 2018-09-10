@@ -1,53 +1,47 @@
 # To check running container: docker exec -it tube-spark /bin/bash
-FROM python:2
+FROM python:2-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.3.1" \
-    HADOOP_VERSION="3.1.0" \
+    HADOOP_VERSION="3.1.1" \
     SCALA_VERSION="2.12.6"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
-    SCALA_INSTALLATION_URL="https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz"
-
-ENV SPARK_HOME="/spark" \
+    SCALA_INSTALLATION_URL="https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" \
+    SPARK_HOME="/spark" \
     HADOOP_HOME="/hadoop" \
     SCALA_HOME="/scala" \
     JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
 
+RUN mkdir -p /usr/share/man/man1
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    openssh-server \
-    wget \
-    git \
-    openjdk-8-jdk \
-    # dependency for cryptography
-    libffi-dev \
+    openjdk-8-jdk-headless \
     # dependency for pyscopg2 - which is dependency for sqlalchemy postgres engine
     libpq-dev \
+    wget \
+    git \
     # dependency for cryptography
-    libssl-dev \
-    python-dev \
-    python-pip \
-    python-setuptools \
-    vim \
-    net-tools
+    libffi-dev \
+    # dependency for cryptography
+    libssl-dev
 
-RUN wget $SPARK_INSTALLATION_URL
-RUN mkdir -p $SPARK_HOME
-RUN tar -xvf spark-${SPARK_VERSION}-bin-without-hadoop.tgz -C $SPARK_HOME --strip-components 1
-RUN rm spark-${SPARK_VERSION}-bin-without-hadoop.tgz
+RUN wget $SPARK_INSTALLATION_URL \
+    && mkdir -p $SPARK_HOME \
+    && tar -xvf spark-${SPARK_VERSION}-bin-without-hadoop.tgz -C $SPARK_HOME --strip-components 1 \
+    && rm spark-${SPARK_VERSION}-bin-without-hadoop.tgz
 
-RUN wget ${HADOOP_INSTALLATION_URL}
-RUN mkdir -p $HADOOP_HOME
-RUN tar -xvf hadoop-${HADOOP_VERSION}.tar.gz -C ${HADOOP_HOME} --strip-components 1
-RUN rm hadoop-${HADOOP_VERSION}.tar.gz
+RUN wget ${HADOOP_INSTALLATION_URL} \
+    && mkdir -p $HADOOP_HOME \
+    && tar -xvf hadoop-${HADOOP_VERSION}.tar.gz -C ${HADOOP_HOME} --strip-components 1 \
+    && rm hadoop-${HADOOP_VERSION}.tar.gz
 
-RUN wget ${SCALA_INSTALLATION_URL}
-RUN mkdir -p /scala
-RUN tar -xvf scala-${SCALA_VERSION}.tgz -C ${SCALA_HOME} --strip-components 1
-RUN rm scala-${SCALA_VERSION}.tgz
+RUN wget ${SCALA_INSTALLATION_URL} \
+    && mkdir -p /scala \
+    && tar -xvf scala-${SCALA_VERSION}.tgz -C ${SCALA_HOME} --strip-components 1 \
+    && rm scala-${SCALA_VERSION}.tgz
 
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
     HADOOP_MAPRED_HOME=$HADOOP_HOME \
@@ -86,20 +80,14 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
 
 EXPOSE 22 4040 8020 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
 
-RUN mkdir /var/run/sshd
-RUN mkdir /hadoop/hdfs
-RUN mkdir /hadoop/hdfs/data
-RUN mkdir /hadoop/hdfs/data/dfs
-RUN mkdir /hadoop/hdfs/data/dfs/namenode
-RUN mkdir /hadoop/logs
-
+RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
 
 COPY . /gen3spark
 WORKDIR /gen3spark
 
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+# ENV TINI_VERSION v0.18.0
+# ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+# RUN chmod +x /tini
+# ENTRYPOINT ["/tini", "--"]
 
 CMD ["/usr/sbin/sshd", "-D"]
