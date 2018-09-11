@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # dependency for cryptography
     libffi-dev \
     # dependency for cryptography
-    libssl-dev
+    libssl-dev \
+    vim
 
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
