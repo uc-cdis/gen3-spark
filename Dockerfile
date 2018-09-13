@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # dependency for cryptography
     libffi-dev \
     # dependency for cryptography
-    libssl-dev
+    libssl-dev \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
@@ -37,7 +39,8 @@ RUN wget $SPARK_INSTALLATION_URL \
 RUN wget ${HADOOP_INSTALLATION_URL} \
     && mkdir -p $HADOOP_HOME \
     && tar -xvf hadoop-${HADOOP_VERSION}.tar.gz -C ${HADOOP_HOME} --strip-components 1 \
-    && rm hadoop-${HADOOP_VERSION}.tar.gz
+    && rm hadoop-${HADOOP_VERSION}.tar.gz \
+    && rm -rf $HADOOP_HOME/share/doc
 
 RUN wget ${SCALA_INSTALLATION_URL} \
     && mkdir -p /scala \
