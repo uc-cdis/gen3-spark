@@ -2,9 +2,9 @@
 FROM python:2-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    SPARK_VERSION="2.3.1" \
+    SPARK_VERSION="2.4.0" \
     HADOOP_VERSION="3.1.1" \
-    SCALA_VERSION="2.12.6"
+    SCALA_VERSION="2.12.8"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
