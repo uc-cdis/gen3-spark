@@ -1,5 +1,5 @@
 # To check running container: docker exec -it tube-spark /bin/bash
-FROM python:2-slim
+FROM python:2
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
@@ -82,7 +82,7 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo "spark.app.name                   gen3spark" >> ${SPARK_HOME}/conf/spark-defaults.conf
 
 
-EXPOSE 22 4040 8020 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
+EXPOSE 22 4040 7077 8020 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
 
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
 
