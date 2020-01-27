@@ -1,5 +1,5 @@
 # To check running container: docker exec -it tube-spark /bin/bash
-FROM python:2-slim
+FROM python:2-slim-stretch
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
