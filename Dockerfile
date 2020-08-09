@@ -52,7 +52,8 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
     HADOOP_COMMON_HOME=$HADOOP_HOME \
     HADOOP_HDFS_HOME=$HADOOP_HOME \
     YARN_HOME=$HADOOP_HOME \
-    HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+    HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native \
+    SPARK_MASTER_HOST=spark-service
 
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA}/bin"
 
@@ -82,7 +83,7 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo "spark.app.name                   gen3spark" >> ${SPARK_HOME}/conf/spark-defaults.conf
 
 
-EXPOSE 22 4040 8020 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
+EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
 
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
 
