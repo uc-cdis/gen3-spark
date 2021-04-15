@@ -1,5 +1,5 @@
 # To check running container: docker exec -it tube-spark /bin/bash
-FROM python:3.7-stretch
+FROM quay.io/cdis/python:3.7-stretch
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
