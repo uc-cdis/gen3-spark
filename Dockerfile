@@ -1,10 +1,10 @@
-# To check running container: docker exec -it tube-spark /bin/bash
-FROM quay.io/cdis/python:3.7-stretch
+# To check running container: docker exec -it tube /bin/bash
+FROM quay.io/cdis/python:python3.9-buster-stable
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    SPARK_VERSION="2.4.0" \
-    HADOOP_VERSION="3.1.1" \
-    SCALA_VERSION="2.12.8"
+    SPARK_VERSION="3.3.0" \
+    HADOOP_VERSION="3.3.2" \
+    SCALA_VERSION="2.13.7"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
@@ -12,15 +12,16 @@ ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_V
     SPARK_HOME="/spark" \
     HADOOP_HOME="/hadoop" \
     SCALA_HOME="/scala" \
-    JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
+    JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
 
 RUN mkdir -p /usr/share/man/man1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
     build-essential \
-    openjdk-8-jdk-headless \
-    libssl1.0.2 \
+    libssl1.1 \
     libgnutls30 \
+    openjdk-11-jdk \
     openssh-server \
     # dependency for pyscopg2 - which is dependency for sqlalchemy postgres engine
     libpq-dev \
@@ -56,6 +57,8 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
     YARN_HOME=$HADOOP_HOME \
     HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 
+RUN apt-get --only-upgrade install libpq-dev
+
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA}/bin"
 
 RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
@@ -72,6 +75,7 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export SPARK_DIST_CLASSPATH=$(hadoop --config $HADOOP_HOME/etc/hadoop classpath):/hadoop/share/hadoop/tools/lib/*" >> ${SPARK_HOME}/conf/spark-env.sh && \
+    echo "export SPARK_MASTER_HOST=0.0.0.0" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "spark.eventLog.enabled           true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
     echo "spark.eventLog.compress          true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
     echo "spark.eventLog.dir               hdfs://0.0.0.0:8021/logs" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
