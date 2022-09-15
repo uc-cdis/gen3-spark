@@ -4,7 +4,7 @@ FROM quay.io/cdis/python:python3.9-buster-stable
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
     HADOOP_VERSION="3.1.1" \
-    SCALA_VERSION="2.12.0"
+    SCALA_VERSION="2.12.8"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
@@ -18,6 +18,7 @@ RUN mkdir -p /usr/share/man/man1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
+    libpq-dev \
     build-essential \
     libssl1.1 \
     libgnutls30 \
@@ -59,7 +60,7 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
 
 RUN apt-get --only-upgrade install libpq-dev
 
-ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA}/bin"
+ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
 
 RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HADOOP_OS_TYPE="${HADOOP_OS_TYPE:-$(uname -s)}"' >> ${HADOOP_CONF_DIR}/hadoop-env.sh && \
