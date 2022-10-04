@@ -76,7 +76,7 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export SPARK_DIST_CLASSPATH=$(hadoop --config $HADOOP_HOME/etc/hadoop classpath):/hadoop/share/hadoop/tools/lib/*" >> ${SPARK_HOME}/conf/spark-env.sh && \
-    echo "export SPARK_MASTER_HOST=0.0.0.0" >> ${SPARK_HOME}/conf/spark-env.sh && \
+    echo "export SPARK_MASTER_HOST=spark-service" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "spark.eventLog.enabled           true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
     echo "spark.eventLog.compress          true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
     echo "spark.eventLog.dir               hdfs://0.0.0.0:8021/logs" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
