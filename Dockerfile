@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libssl1.1 \
     libgnutls30 \
+    ca-certificates-java \
     openjdk-11-jdk \
     openssh-server \
     # dependency for pyscopg2 - which is dependency for sqlalchemy postgres engine
