@@ -3,13 +3,146 @@ name: Build Image and Push to Quay
 on: push
 
 jobs:
-  ci:
+  build-hadoop-base:
     name: Build Hadoop base image
     uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
     with:
       OVERRIDE_REPO_NAME: hadoop-base
       OVERRIDE_TAG_NAME: 3.3.0
       DOCKERFILE_LOCATION: "./hadoop/base/Dockerfile"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-spark-base:
+    name: Build Spark base image
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    with:
+      OVERRIDE_REPO_NAME: spark-base
+      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      DOCKERFILE_LOCATION: "./spark/base/Dockerfile"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-namenode:
+    name: namenode
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
+    with:
+      OVERRIDE_REPO_NAME: namenode
+      OVERRIDE_TAG_NAME: 3.3.0
+      DOCKERFILE_LOCATION: "./hadoop/namenode/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./hadoop/namenode"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-datanode:
+    name: datanode
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
+    with:
+      OVERRIDE_REPO_NAME: namenode
+      OVERRIDE_TAG_NAME: 3.3.0
+      DOCKERFILE_LOCATION: "./hadoop/datanode/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./hadoop/datanode"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-nodemanager:
+    name: nodemanager
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
+    with:
+      OVERRIDE_REPO_NAME: nodemanager
+      OVERRIDE_TAG_NAME: 3.3.0
+      DOCKERFILE_LOCATION: "./hadoop/nodemanager/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./hadoop/nodemanager"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-resourcemanager:
+    name: resourcemanager
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
+    with:
+      OVERRIDE_REPO_NAME: resourcemanager
+      OVERRIDE_TAG_NAME: 3.3.0
+      DOCKERFILE_LOCATION: "./hadoop/resourcemanager/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./hadoop/resourcemanager"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-historyserver:
+    name: historyserver
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
+    with:
+      OVERRIDE_REPO_NAME: historyserver
+      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      DOCKERFILE_LOCATION: "./hadoop/historyserver/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./hadoop/historyserver"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-master:
+    name: spark master
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-spark-base]
+    with:
+      OVERRIDE_REPO_NAME: spark-master
+      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      DOCKERFILE_LOCATION: "./spark/master/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./spark/master"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-worker:
+    name: spark worker
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-spark-base]
+    with:
+      OVERRIDE_REPO_NAME: spark-worker
+      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      DOCKERFILE_LOCATION: "./spark/worker/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./spark/worker"
+      USE_QUAY_ONLY: true
+    secrets:
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+      QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
+  build-submit:
+    name: spark submit
+    uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-spark-base]
+    with:
+      OVERRIDE_REPO_NAME: spark-submit
+      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      DOCKERFILE_LOCATION: "./spark/submit/Dockerfile"
+      DOCKERFILE_BUILD_CONTEXT: "./spark/submit"
       USE_QUAY_ONLY: true
     secrets:
       ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}

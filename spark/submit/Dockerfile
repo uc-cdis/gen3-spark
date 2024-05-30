@@ -5,7 +5,7 @@ LABEL maintainer="Gezim Sejdiu <g.sejdiu@gmail.com>, Giannis Mouchakis <gmouchak
 ENV SPARK_MASTER_NAME spark-master
 ENV SPARK_MASTER_PORT 7077
 
-COPY submit.sh /gen3spark
+COPY submit.sh /gen3spark/
 WORKDIR /gen3spark
 
 CMD ["/bin/bash", "/submit.sh"]
