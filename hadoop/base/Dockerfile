@@ -50,12 +50,8 @@ RUN apt-get --only-upgrade install libpq-dev
 
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
 
-COPY . /gen3spark
-WORKDIR /gen3spark
+ADD entrypoint.sh /entrypoint.sh
 
-# ENV TINI_VERSION v0.18.0
-# ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-# RUN chmod +x /tini
-# ENTRYPOINT ["/tini", "--"]
+RUN chmod a+x /entrypoint.sh
 
-CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/entrypoint.sh"]

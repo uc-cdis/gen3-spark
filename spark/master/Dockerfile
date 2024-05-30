@@ -8,8 +8,7 @@ ENV SPARK_MASTER_LOG /spark/logs
 
 EXPOSE 8080 7077 6066
 
-COPY master.sh /gen3spark/
-WORKDIR /gen3spark
+COPY master.sh /
 
 CMD ["/bin/bash", "/master.sh"]
 

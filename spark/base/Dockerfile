@@ -46,13 +46,4 @@ ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HAD
 
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
 
-COPY . /gen3spark
-WORKDIR /gen3spark
-
-# ENV TINI_VERSION v0.18.0
-# ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-# RUN chmod +x /tini
-# ENTRYPOINT ["/tini", "--"]
-
 ENV PYTHONHASHSEED 1
-CMD ["/usr/sbin/sshd", "-D"]
