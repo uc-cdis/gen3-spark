@@ -51,9 +51,7 @@ RUN apt-get --only-upgrade install libpq-dev
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
 
 ADD entrypoint.sh /entrypoint.sh
-ADD run_config.py /run_config.py
 
-RUN chmod a+x /run_config.py
 RUN chmod a+x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

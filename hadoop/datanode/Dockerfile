@@ -2,7 +2,7 @@ FROM quay.io/cdis/hadoop-base:v3.3.0
 
 HEALTHCHECK CMD curl -f http://localhost:9864/ || exit 1
 
-ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/hdfs/data/dfs/datanode
+ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
