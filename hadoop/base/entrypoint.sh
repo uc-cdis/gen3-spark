@@ -4,7 +4,7 @@
 export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://`hostname -f`:8020}
 
 function addProperty() {
-  local path=$1
+  local path=$HADOOP_HOME$1
   local name=$2
   local value=$3
 
@@ -14,7 +14,7 @@ function addProperty() {
 }
 
 function configure() {
-    local path=$1
+    local path=$HADOOP_HOME$1
     local module=$2
     local envPrefix=$3
 
