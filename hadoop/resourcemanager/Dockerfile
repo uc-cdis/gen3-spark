@@ -1,4 +1,4 @@
-FROM quay.io/cdis/hadoop-base:3.3.0
+FROM quay.io/cdis/hadoop-base:v3.3.0
 
 HEALTHCHECK CMD curl -f http://localhost:9864/ || exit 1
 

@@ -4,7 +4,7 @@
 export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://`hostname -f`:8020}
 
 function addProperty() {
-  local path=$HADOOP_HOME$1
+  local path=$1
   local name=$2
   local value=$3
 
@@ -14,7 +14,7 @@ function addProperty() {
 }
 
 function configure() {
-    local path=$HADOOP_HOME$1
+    local path=$1
     local module=$2
     local envPrefix=$3
 
@@ -31,23 +31,23 @@ function configure() {
     done
 }
 
-configure /etc/hadoop/core-site.xml core CORE_CONF
-configure /etc/hadoop/hdfs-site.xml hdfs HDFS_CONF
-configure /etc/hadoop/yarn-site.xml yarn YARN_CONF
-configure /etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
-configure /etc/hadoop/kms-site.xml kms KMS_CONF
-configure /etc/hadoop/mapred-site.xml mapred MAPRED_CONF
+configure /hadoop/etc/hadoop/core-site.xml core CORE_CONF
+configure /hadoop/etc/hadoop/hdfs-site.xml hdfs HDFS_CONF
+configure /hadoop/etc/hadoop/yarn-site.xml yarn YARN_CONF
+configure /hadoop/etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
+configure /hadoop/etc/hadoop/kms-site.xml kms KMS_CONF
+configure /hadoop/etc/hadoop/mapred-site.xml mapred MAPRED_CONF
 
 if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     echo "Configuring for multihomed network"
 
     # HDFS
-    addProperty /etc/hadoop/hdfs-site.xml dfs.namenode.rpc-bind-host 0.0.0.0
-    addProperty /etc/hadoop/hdfs-site.xml dfs.namenode.servicerpc-bind-host 0.0.0.0
-    addProperty /etc/hadoop/hdfs-site.xml dfs.namenode.http-bind-host 0.0.0.0
-    addProperty /etc/hadoop/hdfs-site.xml dfs.namenode.https-bind-host 0.0.0.0
-    addProperty /etc/hadoop/hdfs-site.xml dfs.client.use.datanode.hostname true
-    addProperty /etc/hadoop/hdfs-site.xml dfs.datanode.use.datanode.hostname true
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.namenode.rpc-bind-host 0.0.0.0
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.namenode.servicerpc-bind-host 0.0.0.0
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.namenode.http-bind-host 0.0.0.0
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.namenode.https-bind-host 0.0.0.0
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.client.use.datanode.hostname true
+    addProperty /hadoop/etc/hadoop/hdfs-site.xml dfs.datanode.use.datanode.hostname true
 
     # YARN
     addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.bind-host 0.0.0.0
@@ -59,8 +59,8 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
 fi
 
 if [ -n "$GANGLIA_HOST" ]; then
-    mv /etc/hadoop/hadoop-metrics.properties /etc/hadoop/hadoop-metrics.properties.orig
-    mv /etc/hadoop/hadoop-metrics2.properties /etc/hadoop/hadoop-metrics2.properties.orig
+    mv /hadoop/etc/hadoop/hadoop-metrics.properties /hadoop/etc/hadoop/hadoop-metrics.properties.orig
+    mv /hadoop/etc/hadoop/hadoop-metrics2.properties /hadoop/etc/hadoop/hadoop-metrics2.properties.orig
 
     for module in mapred jvm rpc ugi; do
         echo "$module.class=org.apache.hadoop.metrics.ganglia.GangliaContext31"
