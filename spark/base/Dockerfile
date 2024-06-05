@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # dependency for cryptography
     libssl-dev \
     vim \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget $SPARK_INSTALLATION_URL \

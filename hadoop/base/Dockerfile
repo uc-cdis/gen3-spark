@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     net-tools \
     netcat \
     gnupg \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget ${HADOOP_INSTALLATION_URL} \
