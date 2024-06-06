@@ -9,6 +9,6 @@ VOLUME /hadoop/dfs/data
 ADD run.sh /run.sh
 RUN chmod a+x /run.sh
 
-EXPOSE 9864
+EXPOSE 9864 8088
 
 CMD ["/run.sh"]
