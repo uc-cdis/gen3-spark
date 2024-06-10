@@ -20,6 +20,7 @@ jobs:
   build-spark-base:
     name: Build Spark base image
     uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
+    needs: [build-hadoop-base]
     with:
       OVERRIDE_REPO_NAME: spark-base
       OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
@@ -111,7 +112,7 @@ jobs:
     needs: [build-spark-base]
     with:
       OVERRIDE_REPO_NAME: spark-master
-      OVERRIDE_TAG_NAME: 3.3.0-hadoop3.3
+      OVERRIDE_TAG_NAME: v3.3.0-hadoop3.3
       DOCKERFILE_LOCATION: "./spark/master/Dockerfile"
       DOCKERFILE_BUILD_CONTEXT: "./spark/master"
       USE_QUAY_ONLY: true

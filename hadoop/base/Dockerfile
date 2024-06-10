@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget ${HADOOP_INSTALLATION_URL} \
+    && ln -s /lib64/ld-linux-x86-64.so.2 /lib/ld-linux-x86-64.so.2 \
     && mkdir -p $HADOOP_HOME \
     && tar -xvf hadoop-${HADOOP_VERSION}.tar.gz -C ${HADOOP_HOME} --strip-components 1 \
     && rm hadoop-${HADOOP_VERSION}.tar.gz \
