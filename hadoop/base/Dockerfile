@@ -55,6 +55,6 @@ ADD entrypoint.sh /entrypoint.sh
 
 RUN chmod a+x /entrypoint.sh
 
-EXPOSE 8020
+EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000
 
 ENTRYPOINT ["/entrypoint.sh"]
