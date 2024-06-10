@@ -55,4 +55,6 @@ ADD entrypoint.sh /entrypoint.sh
 
 RUN chmod a+x /entrypoint.sh
 
+EXPOSE 8020
+
 ENTRYPOINT ["/entrypoint.sh"]
