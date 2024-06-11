@@ -27,7 +27,6 @@ def configure_core_site():
     root = tree.getroot()
     root.append(create_property('hadoop.tmp.dir', '{}/hdfs/tmp'.format(config.HADOOP_HOME)))
     root.append(create_property('fs.default.name', config.HADOOP_URL))
-    root.append(create_property('fs.defaultFS', config.HADOOP_URL))
     indent(root)
     tree.write(core_site_path)
 
