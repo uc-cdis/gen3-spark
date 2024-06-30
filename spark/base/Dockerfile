@@ -4,12 +4,19 @@ FROM quay.io/cdis/hadoop-base:v3.3.0
 ENV DEBIAN_FRONTEND=noninteractive \
     HADOOP_SPARK_VERSION="3" \
     ES_HADOOP_VERSION="8.3.3" \
-    SPARK_VERSION="3.3.0"
+    SQOOP_VERSION="1.4.7" \
+    SPARK_VERSION="3.3.0" \
+    MAVEN_ES_URL="https://search.maven.org/remotecontent?filepath=org/elasticsearch" \
+    ES_SPARK_30_2_12="elasticsearch-spark-30_2.12" \
+    ES_SPARK_20_2_11="elasticsearch-spark-20_2.11"
+
+ENV MAVEN_ES_SPARK_VERSION="${MAVEN_ES_URL}/${ES_SPARK_30_2_12}/${ES_HADOOP_VERSION}/${ES_SPARK_30_2_12}-${ES_HADOOP_VERSION}"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_SPARK_VERSION}.tgz" \
     SQOOP_INSTALLATION_URL="http://archive.apache.org/dist/sqoop/${SQOOP_VERSION}/sqoop-${SQOOP_VERSION}.bin__hadoop-2.6.0.tar.gz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
     ES_HADOOP_INSTALLATION_URL="https://artifacts.elastic.co/downloads/elasticsearch-hadoop/elasticsearch-hadoop-${ES_HADOOP_VERSION}.zip" \
+    SPARK_HOME="/spark" \
     SQOOP_HOME="/sqoop" \
     HADOOP_HOME="/hadoop" \
     ES_HADOOP_HOME="/es-hadoop" \
