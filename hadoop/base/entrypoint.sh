@@ -56,6 +56,9 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
 
     # MAPRED
     addProperty /etc/hadoop/mapred-site.xml yarn.nodemanager.bind-host 0.0.0.0
+    addProperty /etc/hadoop/mapred-site.xml yarn.resourcemanager.scheduler.address 0.0.0.0
+    addProperty /etc/hadoop/mapred-site.xml yarn.resourcemanager.resource-tracker.address 0.0.0.0
+    addProperty /etc/hadoop/mapred-site.xml yarn.resourcemanager.address 0.0.0.0
 fi
 
 if [ -n "$GANGLIA_HOST" ]; then
