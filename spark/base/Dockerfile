@@ -33,6 +33,8 @@ RUN wget $SPARK_INSTALLATION_URL \
 
 RUN mkdir -p $SPARK_HOME/apps
 
+RUN python -m pip install --upgrade pip poetry requests
+
 RUN apt-get --only-upgrade install libpq-dev
 
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
