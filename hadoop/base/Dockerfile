@@ -9,6 +9,7 @@ ENV HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop
     JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
 
 RUN mkdir -p /usr/share/man/man1
+RUN mkdir -p /usr/share/man/man7
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
@@ -54,7 +55,7 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
 
 RUN apt-get --only-upgrade install libpq-dev
 
-ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
+ENV PATH="${PATH}:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
 
 ADD entrypoint.sh /entrypoint.sh
 

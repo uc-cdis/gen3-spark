@@ -13,18 +13,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
 ENV MAVEN_ES_SPARK_VERSION="${MAVEN_ES_URL}/${ES_SPARK_30_2_12}/${ES_HADOOP_VERSION}/${ES_SPARK_30_2_12}-${ES_HADOOP_VERSION}"
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_SPARK_VERSION}.tgz" \
-    SQOOP_INSTALLATION_URL="http://archive.apache.org/dist/sqoop/${SQOOP_VERSION}/sqoop-${SQOOP_VERSION}.bin__hadoop-2.6.0.tar.gz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
     ES_HADOOP_INSTALLATION_URL="https://artifacts.elastic.co/downloads/elasticsearch-hadoop/elasticsearch-hadoop-${ES_HADOOP_VERSION}.zip" \
     SPARK_HOME="/spark" \
-    SQOOP_HOME="/sqoop" \
     HADOOP_HOME="/hadoop" \
     ES_HADOOP_HOME="/es-hadoop" \
     JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
 ENV ES_HADOOP_HOME_VERSION="${ES_HADOOP_HOME}/elasticsearch-hadoop-${ES_HADOOP_VERSION}"
 
-RUN mkdir -p /usr/share/man/man1
-RUN mkdir -p $SQOOP_HOME
 
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
@@ -47,6 +43,8 @@ RUN wget ${ES_HADOOP_INSTALLATION_URL} \
 RUN wget ${MAVEN_ES_SPARK_VERSION}.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SPARK_20_2_11}-${ES_HADOOP_VERSION}.jar
 RUN wget ${MAVEN_ES_SPARK_VERSION}-javadoc.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SPARK_20_2_11}-${ES_HADOOP_VERSION}-javadoc.jar
 RUN wget ${MAVEN_ES_SPARK_VERSION}-sources.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SPARK_20_2_11}-${ES_HADOOP_VERSION}-sources.jar
+
+ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin"
 
 COPY spark/base/confs/log4j.properties ${SPARK_HOME}/conf/log4j.properties
 COPY spark/base/confs/log4j2.properties ${SPARK_HOME}/conf/log4j2.properties
