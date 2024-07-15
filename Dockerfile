@@ -94,6 +94,9 @@ EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 5
 
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
 
+COPY spark/base/confs/log4j.properties /spark/conf/log4j.properties
+COPY spark/base/confs/log4j2.properties /spark/conf/log4j2.properties
+
 COPY . /gen3spark
 WORKDIR /gen3spark
 
