@@ -122,7 +122,7 @@ jobs:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_ROBOT_TOKEN: ${{ secrets.QUAY_ROBOT_TOKEN }}
   build-gen3-spark:
-    name: Build Image and Push to Quay
+    name: Build Gen3 spark single node
     uses: uc-cdis/.github/.github/workflows/image_build_push.yaml@master
     secrets:
       ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}

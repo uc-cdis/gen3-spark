@@ -48,4 +48,7 @@ RUN wget ${MAVEN_ES_SPARK_VERSION}.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SP
 RUN wget ${MAVEN_ES_SPARK_VERSION}-javadoc.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SPARK_20_2_11}-${ES_HADOOP_VERSION}-javadoc.jar
 RUN wget ${MAVEN_ES_SPARK_VERSION}-sources.jar -O ${ES_HADOOP_HOME_VERSION}/dist/${ES_SPARK_20_2_11}-${ES_HADOOP_VERSION}-sources.jar
 
+COPY spark/base/confs/log4j.properties ${SPARK_HOME}/conf/log4j.properties
+COPY spark/base/confs/log4j2.properties ${SPARK_HOME}/conf/log4j2.properties
+
 ENV PYTHONHASHSEED 1
