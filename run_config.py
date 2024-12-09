@@ -44,6 +44,7 @@ def configure_hdfs_site():
     root.append(create_property('dfs.namenode.https-bind-host', config.HADOOP_HOST))
     root.append(create_property('dfs.client.use.datanode.hostname', 'true'))
     root.append(create_property('dfs.datanode.use.datanode.hostname', 'true'))
+    root.append(create_property("dfs.permissions", "false"))
     indent(root)
     tree.write(core_site_path)
 
