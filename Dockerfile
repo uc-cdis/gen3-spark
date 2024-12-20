@@ -1,5 +1,8 @@
 # To check running container: docker exec -it tube /bin/bash
-FROM quay.io/cdis/python:python3.9-buster-stable
+ARG AZLINUX_BASE_VERSION=feat_python-nginx
+
+# ------ Base stage ------
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
@@ -11,30 +14,20 @@ ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_V
     SCALA_INSTALLATION_URL="https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" \
     SPARK_HOME="/spark" \
     HADOOP_HOME="/hadoop" \
-    SCALA_HOME="/scala" \
-    JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
+    SCALA_HOME="/scala"
 
 RUN mkdir -p /usr/share/man/man1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common \
-    libpq-dev \
-    build-essential \
-    libssl1.1 \
-    libgnutls30 \
-    ca-certificates-java \
-    openjdk-11-jdk \
-    openssh-server \
-    # dependency for pyscopg2 - which is dependency for sqlalchemy postgres engine
-    libpq-dev \
+RUN yum update && yum install -y --setopt=install_weak_deps=False \
+    yum-utils \
+    gcc gcc-c++ make \
+    openssl openssl-devel \
+    gnutls gnutls-devel \
     wget \
-    git \
-    # dependency for cryptography
-    libffi-dev \
-    # dependency for cryptography
-    libssl-dev \
-    vim \
-    && rm -rf /var/lib/apt/lists/*
+    tar \
+    && yum clean all
+
+
 
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
@@ -52,16 +45,41 @@ RUN wget ${SCALA_INSTALLATION_URL} \
     && tar -xvf scala-${SCALA_VERSION}.tgz -C ${SCALA_HOME} --strip-components 1 \
     && rm scala-${SCALA_VERSION}.tgz
 
+
+# ------ Final Stage ------
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION}
+
+    # Set environment variables
+ENV SPARK_HOME="/spark" \
+    HADOOP_HOME="/hadoop" \
+    SCALA_HOME="/scala"
+
+# Copy required files from build stage
+COPY --from=builder ${SPARK_HOME} ${SPARK_HOME}
+COPY --from=builder ${HADOOP_HOME} ${HADOOP_HOME}
+COPY --from=builder ${SCALA_HOME} ${SCALA_HOME}
+
+
+# Install runtime dependencies
+RUN yum update && yum install -y --setopt=install_weak_deps=False \
+    java-11-amazon-corretto java-11-amazon-corretto-devel \
+    openssh-server \
+    postgresql-devel \
+    git \
+    libffi libffi-devel \
+    vim \
+    && yum clean all
+
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
     HADOOP_MAPRED_HOME=$HADOOP_HOME \
     HADOOP_COMMON_HOME=$HADOOP_HOME \
     HADOOP_HDFS_HOME=$HADOOP_HOME \
     YARN_HOME=$HADOOP_HOME \
-    HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+    HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native \
+    JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto" \
+    PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin}"
 
-RUN apt-get --only-upgrade install libpq-dev
 
-ENV PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin"
 
 RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HADOOP_OS_TYPE="${HADOOP_OS_TYPE:-$(uname -s)}"' >> ${HADOOP_CONF_DIR}/hadoop-env.sh && \
@@ -92,7 +110,8 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
 
 EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
 
-RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs
+RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs \
+        && ssh-keygen -A
 
 COPY . /gen3spark
 WORKDIR /gen3spark
