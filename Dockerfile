@@ -2,7 +2,7 @@
 ARG AZLINUX_BASE_VERSION=feat_python-nginx
 
 # ------ Base stage ------
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} as builder
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
