@@ -34,7 +34,6 @@ RUN yum update && yum install -y --setopt=install_weak_deps=False \
     gnutls gnutls-devel \
     wget \
     tar \
-    ca-certificates-java \
     && yum clean all
 
 RUN wget $SPARK_INSTALLATION_URL \
