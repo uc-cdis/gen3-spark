@@ -1,7 +1,7 @@
 # To check running container: docker exec -it tube /bin/bash
 ARG AZLINUX_BASE_VERSION=master
 
-FROM quay.io/cdis/python-build-base:${AZLINUX_BASE_VERSION} AS base
+FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS base
 
 # create gen3 user
 # Create a group 'gen3' with GID 1000 and a user 'gen3' with UID 1000
