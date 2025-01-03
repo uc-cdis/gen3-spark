@@ -1,8 +1,18 @@
 # To check running container: docker exec -it tube /bin/bash
-ARG AZLINUX_BASE_VERSION=feat_python-nginx
+ARG AZLINUX_BASE_VERSION=master
 
-# ------ Base stage ------
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS builder
+FROM quay.io/cdis/python-build-base:${AZLINUX_BASE_VERSION} AS base
+
+# create gen3 user
+# Create a group 'gen3' with GID 1000 and a user 'gen3' with UID 1000
+RUN groupadd -g 1000 gen3 && \
+    useradd -m -s /bin/bash -u 1000 -g gen3 gen3
+#will change to gen3 user later
+
+WORKDIR /gen3spark
+
+# ------ Builder Stage ------
+FROM base AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
@@ -27,8 +37,6 @@ RUN yum update && yum install -y --setopt=install_weak_deps=False \
     tar \
     && yum clean all
 
-
-
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
     && tar -xvf spark-${SPARK_VERSION}-bin-without-hadoop.tgz -C $SPARK_HOME --strip-components 1 \
@@ -47,7 +55,7 @@ RUN wget ${SCALA_INSTALLATION_URL} \
 
 
 # ------ Final Stage ------
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION}
+FROM base
 
     # Set environment variables
 ENV SPARK_HOME="/spark" \
