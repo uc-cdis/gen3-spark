@@ -5,8 +5,8 @@ FROM quay.io/cdis/python-build-base:${AZLINUX_BASE_VERSION} AS base
 
 # # create gen3 user
 # # Create a group 'gen3' with GID 1000 and a user 'gen3' with UID 1000
-# RUN groupadd -g 1000 gen3 && \
-#     useradd -m -s /bin/bash -u 1000 -g gen3 gen3
+RUN groupadd -g 1000 gen3 && \
+    useradd -m -s /bin/bash -u 1000 -g gen3 gen3
 
 WORKDIR /gen3spark
 
@@ -118,17 +118,17 @@ RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP
         && ssh-keygen -A
 
 # # Change owner to gen3 user
-# RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME}
+RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME}
 
-# USER gen3
+USER gen3
 
 COPY . /gen3spark
 WORKDIR /gen3spark
 
-# ENV HDFS_NAMENODE_USER=gen3
-# ENV HDFS_DATANODE_USER=gen3
-# ENV HDFS_RESOURCEMANAGER_USER=gen3
-# ENV HDFS_NODEMANAGER_USER=gen3
+ENV HDFS_NAMENODE_USER=gen3
+ENV HDFS_DATANODE_USER=gen3
+ENV HDFS_RESOURCEMANAGER_USER=gen3
+ENV HDFS_NODEMANAGER_USER=gen3
 
 
 # ENV TINI_VERSION v0.18.0
