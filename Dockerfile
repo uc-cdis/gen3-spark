@@ -125,6 +125,12 @@ USER gen3
 COPY . /gen3spark
 WORKDIR /gen3spark
 
+ENV HADOOP_NAMENODE_USER=gen3
+ENV HADOOP_DATANODE_USER=gen3
+ENV HADOOP_RESOURCEMANAGER_USER=gen3
+ENV HADOOP_NODEMANAGER_USER=gen3
+
+
 # ENV TINI_VERSION v0.18.0
 # ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 # RUN chmod +x /tini
