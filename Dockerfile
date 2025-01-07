@@ -118,7 +118,7 @@ RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP
         && ssh-keygen -A
 
 # # Change owner to gen3 user
-RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/"
+RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/" "/result"
 
 USER gen3
 
