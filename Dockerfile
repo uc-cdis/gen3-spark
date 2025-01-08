@@ -74,6 +74,7 @@ RUN yum update && yum install -y --setopt=install_weak_deps=False \
     git \
     libffi libffi-devel \
     vim \
+    ca-certificates \
     && yum clean all
 
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
@@ -90,14 +91,14 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo 'export HDFS_NAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HDFS_SECONDARYNAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HDFS_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_DATANODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_NAMENODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_SECONDARYNAMENODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_DATANODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_NAMENODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_SECONDARYNAMENODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export JAVA_HOME=${JAVA_HOME}" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export HADOOP_HOME=${HADOOP_HOME}" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${HADOOP_HOME}/share/hadoop/tools/lib" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
-    echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
+    echo "export YARN_RESOURCEMANAGER_USER=gen3" >> $HADOOP_CONF_DIR/yarn-env.sh && \
+    echo "export YARN_NODEMANAGER_USER=gen3" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export SPARK_DIST_CLASSPATH=$(hadoop --config $HADOOP_HOME/etc/hadoop classpath):/hadoop/share/hadoop/tools/lib/*" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "export SPARK_MASTER_HOST=0.0.0.0" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "spark.eventLog.enabled           true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
@@ -114,21 +115,21 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
 
 EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 50070 50075 50090
 
-RUN mkdir -p /result /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs \
+RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs \
         && ssh-keygen -A
 
 # # Change owner to gen3 user
-RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/" "/result"
+RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/" "/etc/pki/"
 
 USER gen3
 
 COPY . /gen3spark
 WORKDIR /gen3spark
 
-ENV HDFS_NAMENODE_USER=gen3
-ENV HDFS_DATANODE_USER=gen3
-ENV HDFS_RESOURCEMANAGER_USER=gen3
-ENV HDFS_NODEMANAGER_USER=gen3
+ENV HDFS_NAMENODE_USER=hadoop
+ENV HDFS_DATANODE_USER=hadoop
+ENV HDFS_RESOURCEMANAGER_USER=hadoop
+ENV HDFS_NODEMANAGER_USER=hadoop
 
 
 # ENV TINI_VERSION v0.18.0
@@ -136,4 +137,4 @@ ENV HDFS_NODEMANAGER_USER=gen3
 # RUN chmod +x /tini
 # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/usr/sbin/sshd", "-D"]
+# CMD ["/usr/sbin/sshd", "-D"]
