@@ -1,8 +1,17 @@
 # To check running container: docker exec -it tube /bin/bash
-ARG AZLINUX_BASE_VERSION=feat_python-nginx
+ARG AZLINUX_BASE_VERSION=master
 
-# ------ Base stage ------
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION} AS builder
+FROM quay.io/cdis/python-build-base:${AZLINUX_BASE_VERSION} AS base
+
+# # create gen3 user
+# # Create a group 'gen3' with GID 1000 and a user 'gen3' with UID 1000
+# RUN groupadd -g 1000 gen3 && \
+#     useradd -m -s /bin/bash -u 1000 -g gen3 gen3
+
+WORKDIR /gen3spark
+
+# ------ Builder Stage ------
+FROM base AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive \
     SPARK_VERSION="2.4.0" \
@@ -27,8 +36,6 @@ RUN yum update && yum install -y --setopt=install_weak_deps=False \
     tar \
     && yum clean all
 
-
-
 RUN wget $SPARK_INSTALLATION_URL \
     && mkdir -p $SPARK_HOME \
     && tar -xvf spark-${SPARK_VERSION}-bin-without-hadoop.tgz -C $SPARK_HOME --strip-components 1 \
@@ -47,7 +54,7 @@ RUN wget ${SCALA_INSTALLATION_URL} \
 
 
 # ------ Final Stage ------
-FROM quay.io/cdis/python-nginx-al:${AZLINUX_BASE_VERSION}
+FROM base
 
     # Set environment variables
 ENV SPARK_HOME="/spark" \
@@ -58,7 +65,6 @@ ENV SPARK_HOME="/spark" \
 COPY --from=builder ${SPARK_HOME} ${SPARK_HOME}
 COPY --from=builder ${HADOOP_HOME} ${HADOOP_HOME}
 COPY --from=builder ${SCALA_HOME} ${SCALA_HOME}
-
 
 # Install runtime dependencies
 RUN yum update && yum install -y --setopt=install_weak_deps=False \
@@ -78,8 +84,6 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
     HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native \
     JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto" \
     PATH="${PATH}:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HADOOP_HOME}/sbin:${HADOOP_HOME}/bin:${JAVA_HOME}/bin:${SCALA_HOME}/bin}"
-
-
 
 RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HADOOP_OS_TYPE="${HADOOP_OS_TYPE:-$(uname -s)}"' >> ${HADOOP_CONF_DIR}/hadoop-env.sh && \
@@ -113,8 +117,19 @@ EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 5
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs \
         && ssh-keygen -A
 
+# # Change owner to gen3 user
+# RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME}
+
+# USER gen3
+
 COPY . /gen3spark
 WORKDIR /gen3spark
+
+# ENV HDFS_NAMENODE_USER=gen3
+# ENV HDFS_DATANODE_USER=gen3
+# ENV HDFS_RESOURCEMANAGER_USER=gen3
+# ENV HDFS_NODEMANAGER_USER=gen3
+
 
 # ENV TINI_VERSION v0.18.0
 # ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
