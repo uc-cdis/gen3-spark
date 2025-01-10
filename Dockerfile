@@ -74,7 +74,6 @@ RUN yum update && yum install -y --setopt=install_weak_deps=False \
     git \
     libffi libffi-devel \
     vim \
-    ca-certificates \
     && yum clean all
 
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
