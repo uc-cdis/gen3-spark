@@ -136,4 +136,4 @@ ENV HDFS_NODEMANAGER_USER=gen3
 # RUN chmod +x /tini
 # ENTRYPOINT ["/tini", "--"]
 
-# CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D"]
