@@ -5,8 +5,8 @@ FROM quay.io/cdis/python-build-base:${AZLINUX_BASE_VERSION} AS base
 
 # # create gen3 user
 # # Create a group 'gen3' with GID 1000 and a user 'gen3' with UID 1000
-# RUN groupadd -g 1000 gen3 && \
-#     useradd -m -s /bin/bash -u 1000 -g gen3 gen3
+RUN groupadd -g 1000 gen3 && \
+    useradd -m -s /bin/bash -u 1000 -g gen3 gen3
 
 WORKDIR /gen3spark
 
@@ -90,14 +90,14 @@ RUN echo 'export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb
     echo 'export HDFS_NAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HDFS_SECONDARYNAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo 'export HDFS_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS"' >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_DATANODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_NAMENODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export HDFS_SECONDARYNAMENODE_USER=root" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_DATANODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_NAMENODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
+    echo "export HDFS_SECONDARYNAMENODE_USER=gen3" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export JAVA_HOME=${JAVA_HOME}" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export HADOOP_HOME=${HADOOP_HOME}" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
     echo "export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${HADOOP_HOME}/share/hadoop/tools/lib" >> $HADOOP_CONF_DIR/hadoop-env.sh && \
-    echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
-    echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_CONF_DIR/yarn-env.sh && \
+    echo "export YARN_RESOURCEMANAGER_USER=gen3" >> $HADOOP_CONF_DIR/yarn-env.sh && \
+    echo "export YARN_NODEMANAGER_USER=gen3" >> $HADOOP_CONF_DIR/yarn-env.sh && \
     echo "export SPARK_DIST_CLASSPATH=$(hadoop --config $HADOOP_HOME/etc/hadoop classpath):/hadoop/share/hadoop/tools/lib/*" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "export SPARK_MASTER_HOST=0.0.0.0" >> ${SPARK_HOME}/conf/spark-env.sh && \
     echo "spark.eventLog.enabled           true" >> ${SPARK_HOME}/conf/spark-defaults.conf && \
@@ -118,17 +118,17 @@ RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP
         && ssh-keygen -A
 
 # # Change owner to gen3 user
-# RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME}
+RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/"
 
-# USER gen3
+USER gen3
 
 COPY . /gen3spark
 WORKDIR /gen3spark
 
-# ENV HDFS_NAMENODE_USER=gen3
-# ENV HDFS_DATANODE_USER=gen3
-# ENV HDFS_RESOURCEMANAGER_USER=gen3
-# ENV HDFS_NODEMANAGER_USER=gen3
+ENV HDFS_NAMENODE_USER=gen3
+ENV HDFS_DATANODE_USER=gen3
+ENV HDFS_RESOURCEMANAGER_USER=gen3
+ENV HDFS_NODEMANAGER_USER=gen3
 
 
 # ENV TINI_VERSION v0.18.0
