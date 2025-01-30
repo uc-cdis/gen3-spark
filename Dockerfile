@@ -122,6 +122,9 @@ RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "
 
 USER gen3
 
+COPY spark/base/confs/log4j.properties /spark/conf/log4j.properties
+COPY spark/base/confs/log4j2.properties /spark/conf/log4j2.properties
+
 COPY . /gen3spark
 WORKDIR /gen3spark
 
