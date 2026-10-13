@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 ENV SPARK_INSTALLATION_URL="http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
     HADOOP_INSTALLATION_URL="http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
-    SCALA_INSTALLATION_URL="https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" \
+    SCALA_INSTALLATION_URL="https://github.com/scala/scala/releases/download/v${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" \
     SPARK_HOME="/spark" \
     HADOOP_HOME="/hadoop" \
     SCALA_HOME="/scala"
