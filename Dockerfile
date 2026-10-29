@@ -117,10 +117,20 @@ EXPOSE 22 4040 7077 8020 8030 8031 8032 8042 8088 9000 10020 19888 50010 50020 5
 RUN mkdir -p /var/run/sshd ${HADOOP_HOME}/hdfs ${HADOOP_HOME}/hdfs/data ${HADOOP_HOME}/hdfs/data/dfs ${HADOOP_HOME}/hdfs/data/dfs/namenode ${HADOOP_HOME}/logs \
         && ssh-keygen -A
 
-# # Change owner to gen3 user
-RUN chown -R gen3:gen3 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/"
+# OpenShift runs containers with an arbitrary UID in the root group (GID 0), so everything hadoop and
+# spark write to (config rewritten by run_config.py, hdfs data, logs, work dirs) must be owned by GID 0
+# and group-writable. /etc/passwd is made group-writable so the chart can add an entry for the
+# random UID at startup (hadoop refuses to run as a user it cannot name).
+RUN mkdir -p ${SPARK_HOME}/logs ${SPARK_HOME}/work && \
+    chown -R gen3:0 ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/" && \
+    chmod -R g=u ${SPARK_HOME} ${HADOOP_HOME} ${SCALA_HOME} ${JAVA_HOME} "/etc/ssh/" && \
+    chmod g=u /etc/passwd
 
-USER gen3
+# Arbitrary UIDs have no home directory
+ENV HOME=/tmp
+
+# Numeric UID:GID 0; OpenShift overrides the UID but keeps GID 0
+USER 1000:0
 
 COPY . /gen3spark
 WORKDIR /gen3spark
