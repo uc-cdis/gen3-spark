@@ -47,6 +47,9 @@ RUN wget ${HADOOP_INSTALLATION_URL} \
     && rm hadoop-${HADOOP_VERSION}.tar.gz \
     && rm -rf $HADOOP_HOME/share/doc
 
+RUN wget -P ${HADOOP_HOME}/share/hadoop/yarn/lib/ \
+    https://repo1.maven.org/maven2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar
+
 RUN wget ${SCALA_INSTALLATION_URL} \
     && mkdir -p /scala \
     && tar -xvf scala-${SCALA_VERSION}.tgz -C ${SCALA_HOME} --strip-components 1 \
